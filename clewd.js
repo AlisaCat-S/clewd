@@ -930,13 +930,30 @@ const updateParams = res => {
         console.log('[33mUsing Cookie from config file[0m');
     }
 
-    // 优先使用环境变量中的COOKIE，并添加日志输出 END
-    
+    // 优先使用环境变量中的COOKIE_ARRAY，并添加日志输出
+    if (process.env.COOKIE_ARRAY) {
+        console.log('[33mUsing CookieArray from environment variable[0m');
+        Config.CookieArray = process.env.COOKIE_ARRAY;
+    } else {
+        console.log('[33mUsing CookieArray from config file[0m');
+    }
+
     Config.rProxy = Config.rProxy.replace(/\/$/, '');
-    Config.CookieArray = [...new Set([Config.CookieArray].join(',').match(/(claude[-_][a-z0-9-_]*?@)?(sessionKey=)?sk-ant-sid01-[\w-]{86}-[\w-]{6}AA/g))];
+    
+
+    const cookieSource = Array.isArray(Config.CookieArray) ? Config.CookieArray.join(',') : Config.CookieArray;
+    Config.CookieArray = [...new Set(cookieSource.match(/(claude[-_][a-z0-9-_]*?@)?(sessionKey=)?sk-ant-sid01-[\w-]{86}-[\w-]{6}AA/g))];
+    
+    if (Config.CookieArray.length === 0) {
+        console.log('[31mWarning: No valid cookies found in CookieArray[0m');
+    } else {
+        console.log(`[32mFound ${Config.CookieArray.length} valid cookie(s) in CookieArray[0m`);
+    }
+
     Config.unknownModels = Config.unknownModels.reduce((prev, cur) => !cur || prev.includes(cur) || AI.mdl().includes(cur) ? prev : [...prev, cur], []);
     writeSettings(Config);
     currentIndex = Config.CookieIndex > 0 ? Config.CookieIndex - 1 : Config.Cookiecounter >= 0 ? Math.floor(Math.random() * Config.CookieArray.length) : 0;
+
 /***************************** */
     Proxy.listen(Config.Port, Config.Ip, onListen);
     Proxy.on('error', (err => {
