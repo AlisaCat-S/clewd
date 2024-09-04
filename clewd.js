@@ -921,6 +921,17 @@ const updateParams = res => {
             Config[key] = process.env[key] ? convertToType(process.env[key]) : Config[key];
         }
     }
+    
+    // 优先使用环境变量中的COOKIE，并添加日志输出
+    if (process.env.COOKIE) {
+        console.log('[33mUsing Cookie from environment variable[0m');
+        Config.Cookie = process.env.COOKIE;
+    } else {
+        console.log('[33mUsing Cookie from config file[0m');
+    }
+
+    // 优先使用环境变量中的COOKIE，并添加日志输出 END
+    
     Config.rProxy = Config.rProxy.replace(/\/$/, '');
     Config.CookieArray = [...new Set([Config.CookieArray].join(',').match(/(claude[-_][a-z0-9-_]*?@)?(sessionKey=)?sk-ant-sid01-[\w-]{86}-[\w-]{6}AA/g))];
     Config.unknownModels = Config.unknownModels.reduce((prev, cur) => !cur || prev.includes(cur) || AI.mdl().includes(cur) ? prev : [...prev, cur], []);
