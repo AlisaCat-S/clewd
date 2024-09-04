@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install the dependencies
-RUN npm install --no-audit --fund false
+RUN npm install --no-audit --fund false --registry https://registry.npmmirror.com
 
 # Copy the rest of the files to the container
 COPY . .
