@@ -22,6 +22,10 @@ RUN chown -R node:node lib/bin/* && \
 USER node
 
 RUN ls -la
+ENV COOKIE=""
+ENV COOKIE_ARRAY =""
+ENV http_proxy=""
+ENV https_proxy=""
 
 # Start the application
 CMD ["node", "clewd.js"]
